@@ -1,0 +1,2694 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The documentation for the pymgcv software library.">
+      
+      
+        <meta name="author" content="Daniel Ward">
+      
+      
+      
+        <link rel="prev" href="../../examples/markov_random_field_crime/">
+      
+      
+        <link rel="next" href="../terms/">
+      
+      
+      <link rel="icon" href="../../_static/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>GAMs - pymgcv</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#gams" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="pymgcv" class="md-header__button md-logo" aria-label="pymgcv" data-md-component="logo">
+      
+  <img src="../../_static/favicon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pymgcv
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              GAMs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SmoothForge/pymgcv" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SmoothForge/pymgcv
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="pymgcv" class="md-nav__button md-logo" aria-label="pymgcv" data-md-component="logo">
+      
+  <img src="../../_static/favicon.svg" alt="logo">
+
+    </a>
+    pymgcv
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SmoothForge/pymgcv" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SmoothForge/pymgcv
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/gamlss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    GAMLSS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/smooth_by_categorical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Smooth-by-categorical
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/linear_functional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Linear functional
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Applied Examples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Applied Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ozone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ozone
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/seasonal_co2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Seasonal CO2
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/spatial_fish_eggs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Spatial fish eggs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/electricity_bam/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Electricity demand BAM
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/supplement_vs_placebo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Supplement vs placebo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/markov_random_field_crime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Markov random field crime
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    GAMs
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    GAMs
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pymgcv.gam.GAM" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;GAM
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pymgcv.gam.BAM" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;BAM
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pymgcv.gam.AbstractGAM" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;AbstractGAM
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pymgcv.gam.FitState" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;FitState
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pymgcv.gam.FitAndSE" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;FitAndSE
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../terms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Terms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basis_functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basis Functions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../families/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Families
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plotting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../miscellaneous/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Miscellaneous API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Development
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="gams">GAMs</h1>
+<p>GAM model types from <code>pymgcv.gam</code>.</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="pymgcv.gam.GAM" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">GAM</span>
+
+
+</h2>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">GAM</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">predictors</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">AbstractTerm</span><span class="p">]</span> <span class="o">|</span> <span class="n">AbstractTerm</span><span class="p">],</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="o">*</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">family</span><span class="p">:</span> <span class="n">AbstractFamily</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">add_intercepts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+        <p>Standard GAM Model.</p>
+
+        <p>Initialize the model.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>predictors</code></b>
+              (<code><span title="collections.abc.Mapping">Mapping</span>[<span title="str">str</span>, <span title="collections.abc.Iterable">Iterable</span>[<a class="autorefs autorefs-internal" title="            AbstractTerm (pymgcv.terms.AbstractTerm)" href="../terms/#pymgcv.terms.AbstractTerm">AbstractTerm</a>] | <a class="autorefs autorefs-internal" title="            AbstractTerm (pymgcv.terms.AbstractTerm)" href="../terms/#pymgcv.terms.AbstractTerm">AbstractTerm</a>]</code>)
+          –
+          <div class="doc-md-description">
+            <p>Dictionary mapping target variable names to an iterable of
+<a class="autorefs autorefs-internal" title="            AbstractTerm" href="../terms/#pymgcv.terms.AbstractTerm"><code>AbstractTerm</code></a> objects used to predict
+<span class="arithmatex">\(g([\mathbb{E}[Y])\)</span>.</p>
+<ul>
+<li>For simple models, this will usually be a single
+    key-value pair:
+    <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x1&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">)}</span>
+</span></code></pre></div></li>
+<li>For multivariate models, e.g. <a class="autorefs autorefs-internal" title="            MVN" href="../families/#pymgcv.families.MVN"><code>MVN</code></a>, the
+    dictionary will have multiple pairs:
+        <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span><span class="s2">&quot;y1&quot;</span><span class="p">:</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x1&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">),</span> <span class="s2">&quot;y2&quot;</span><span class="p">:</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">)}</span>
+</span></code></pre></div></li>
+<li>For multiparameter models, such as LSS-type models (e.g.
+<a class="autorefs autorefs-internal" title="            GauLSS" href="../families/#pymgcv.families.GauLSS"><code>GauLSS</code></a>), the first key-value pair
+must correspond to the variable name in the data (usually modelling the
+location), and the subsequent dictionary elements model the other
+parameters <strong>in the order as defined by the
+family</strong> (e.g. scale and shape). The names of these extra parameters,
+can be anything, and are used as column names for prediction outputs.
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x1&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">),</span> <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">)}</span>
+</span></code></pre></div></li>
+</ul>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>family</code></b>
+              (<code><a class="autorefs autorefs-internal" title="            AbstractFamily (pymgcv.families.AbstractFamily)" href="../families/#pymgcv.families.AbstractFamily">AbstractFamily</a> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Distribution family to use. See <a href="../families/">Families</a>
+for available options.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>add_intercepts</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If False, intercept terms must be manually added to the
+formulae using <a class="autorefs autorefs-internal" title="            Intercept" href="../terms/#pymgcv.terms.Intercept"><code>Intercept</code></a>. If True,
+automatically adds an intercept term to each formula. Intercepts are
+added as needed by methods, such that <code>gam.predictors</code> reflect the
+model as constructed (i.e. before adding intercepts).</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.GAM.fit" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">fit</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">fit</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">data</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="n">Series</span><span class="p">],</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="o">*</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="s2">&quot;GCV.Cp&quot;</span><span class="p">,</span> <span class="s2">&quot;GACV.Cp&quot;</span><span class="p">,</span> <span class="s2">&quot;QNCV&quot;</span><span class="p">,</span> <span class="s2">&quot;REML&quot;</span><span class="p">,</span> <span class="s2">&quot;P-REML&quot;</span><span class="p">,</span> <span class="s2">&quot;ML&quot;</span><span class="p">,</span> <span class="s2">&quot;P-ML&quot;</span><span class="p">,</span> <span class="s2">&quot;NCV&quot;</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;REML&quot;</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">weights</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="n">Series</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">optimizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;outer&quot;</span><span class="p">,</span> <span class="s2">&quot;newton&quot;</span><span class="p">),</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">scale</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;unknown&quot;</span><span class="p">],</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">select</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">knots</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">n_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Self</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Fit the GAM.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>data</code></b>
+              (<code><span title="pandas.core.frame.DataFrame">DataFrame</span> | <span title="collections.abc.Mapping">Mapping</span>[<span title="str">str</span>, <span title="numpy.ndarray">ndarray</span> | <span title="pandas.core.series.Series">Series</span>]</code>)
+          –
+          <div class="doc-md-description">
+            <p>DataFrame or dictionary containing all variables referenced in the
+model. Note, using a dictionary is required when passing matrix-valued
+variables.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>method</code></b>
+              (<code><span title="typing.Literal">Literal</span>[&#39;GCV.Cp&#39;, &#39;GACV.Cp&#39;, &#39;QNCV&#39;, &#39;REML&#39;, &#39;P-REML&#39;, &#39;ML&#39;, &#39;P-ML&#39;, &#39;NCV&#39;]</code>, default:
+                  <code>&#39;REML&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Method for smoothing parameter estimation, matching the mgcv
+options.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>weights</code></b>
+              (<code><span title="str">str</span> | <span title="numpy.ndarray">ndarray</span> | <span title="pandas.core.series.Series">Series</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Observation weights. Either a string, matching a column name,
+or an array/series with length equal to the number of observations.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>optimizer</code></b>
+              (<code><span title="str">str</span> | <span title="tuple">tuple</span>[<span title="str">str</span>, <span title="str">str</span>]</code>, default:
+                  <code>(&#39;outer&#39;, &#39;newton&#39;)</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>An string or length 2 tuple, specifying the numerical
+optimization method to use to optimize the smoothing parameter
+estimation criterion (given by method). "outer" for the direct nested
+optimization approach. "outer" can use several alternative optimizers,
+specified in the second element: "newton" (default), "bfgs", "optim" or
+"nlm". "efs" for the extended Fellner Schall method of Wood and Fasiolo
+(2017).</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>scale</code></b>
+              (<code><span title="typing.Union">Union</span>[<span title="typing.Literal">Literal</span>[&#39;unknown&#39;], <span title="float">float</span>, <span title="int">int</span>, <span title="NoneType">NoneType</span>]</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If a number is provided, it is treated as a known scale parameter.
+If left to None, the scale parameter is 1 for Poisson and binomial and
+unknown otherwise. Note that (RE)ML methods can only work with scale
+parameter 1 for the Poisson and binomial cases.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>select</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If set to True then gam can add an extra penalty to each term so
+that it can be penalized to zero. This means that the smoothing
+parameter estimation during fitting can completely remove terms
+from the model. If the corresponding smoothing parameter is estimated as
+zero then the extra penalty has no effect. Use gamma to increase level
+of penalization.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>gamma</code></b>
+              (<code><span title="float">float</span> | <span title="int">int</span></code>, default:
+                  <code>1</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Increase this beyond 1 to produce smoother models. gamma multiplies
+the effective degrees of freedom in the GCV or UBRE/AIC. gamma can be
+viewed as an effective sample size in the GCV score, and this also
+enables it to be used with REML/ML. Ignored with P-RE/ML or the efs
+optimizer.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>knots</code></b>
+              (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="numpy.ndarray">ndarray</span>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Dictionary mapping covariate names to knot locations.
+For most bases, the length of the knot locations should match with a
+user supplied <code>k</code> value. E.g. for <code>S("x", k=64)</code>, you could
+pass <code>knots={"x": np.linspace(0, 1, 64)}</code>. For multidimensional
+smooths, e.g. <code>S("x", "z", k=64)</code>, you could create a grid of
+coordinates:</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">X</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">knots</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">X</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">Z</span><span class="o">.</span><span class="n">ravel</span><span class="p">()}</span>
+</span></code></pre></div>
+</div>
+<p>Note if using
+<a class="autorefs autorefs-internal" title="            ThinPlateSpline" href="../basis_functions/#pymgcv.basis_functions.ThinPlateSpline"><code>ThinPlateSpline</code></a>, this will
+avoid the eigen-decomposition used to find the basis, which although
+fast often leads to worse results. Different terms can use different
+numbers of knots, unless they share covariates.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>n_threads</code></b>
+              (<code><span title="int">int</span></code>, default:
+                  <code>1</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Number of threads to use for fitting the GAM.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.GAM.predict" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">predict</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">data</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="n">Series</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="o">*</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">compute_se</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">,</span> <span class="s2">&quot;link&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">block_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pymgcv</span><span class="o">.</span><span class="n">custom_types</span><span class="o">.</span><span class="n">FitAndSE</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute model predictions with (optionally) uncertainty estimates.</p>
+<p>Makes predictions for new data using the fitted GAM model. Predictions
+are returned on the link scale (linear predictor scale), not the response
+scale. For response scale predictions, apply the appropriate inverse link
+function to the results.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>data</code></b>
+              (<code><span title="pandas.core.frame.DataFrame">DataFrame</span> | <span title="collections.abc.Mapping">Mapping</span>[<span title="str">str</span>, <span title="numpy.ndarray">ndarray</span> | <span title="pandas.core.series.Series">Series</span>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A dictionary or DataFrame containing all variables referenced in the
+model. Defaults to the data used to fit the model.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>compute_se</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to compute standard errors for predictions.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>type</code></b>
+              (<code><span title="typing.Literal">Literal</span>[&#39;response&#39;, &#39;link&#39;]</code>, default:
+                  <code>&#39;link&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Type of prediction to compute. Either "link" for linear predictor
+scale or "response" for response scale.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>block_size</code></b>
+              (<code><span title="int">int</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Number of rows to process at a time.  If None then block size
+is 1000 if data supplied, and the number of rows in the model frame
+otherwise.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="numpy.ndarray">ndarray</span>] | <span title="dict">dict</span>[<span title="str">str</span>, <a class="autorefs autorefs-internal" title="            FitAndSE (pymgcv.custom_types.FitAndSE)" href="#pymgcv.gam.FitAndSE">FitAndSE</a>[<span title="numpy.ndarray">ndarray</span>]]</code>
+          –
+          <div class="doc-md-description">
+            <p>A dictionary mapping the target variable names to a pandas DataFrame</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+              <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="numpy.ndarray">ndarray</span>] | <span title="dict">dict</span>[<span title="str">str</span>, <a class="autorefs autorefs-internal" title="            FitAndSE (pymgcv.custom_types.FitAndSE)" href="#pymgcv.gam.FitAndSE">FitAndSE</a>[<span title="numpy.ndarray">ndarray</span>]]</code>
+          –
+          <div class="doc-md-description">
+            <p>containing the predictions and standard errors if <code>se</code> is True.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.GAM.partial_effects" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">partial_effects</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">partial_effects</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">data</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Series</span> <span class="o">|</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="o">*</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">compute_se</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">block_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pymgcv</span><span class="o">.</span><span class="n">custom_types</span><span class="o">.</span><span class="n">FitAndSE</span><span class="p">[</span><span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]]</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute partial effects for all model terms.</p>
+<p>Calculates the contribution of each model term to the overall prediction on the
+link scale. The sum of all fit columns equals the total prediction (link scale).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>data</code></b>
+              (<code><span title="pandas.core.frame.DataFrame">DataFrame</span> | <span title="collections.abc.Mapping">Mapping</span>[<span title="str">str</span>, <span title="pandas.core.series.Series">Series</span> | <span title="numpy.ndarray">ndarray</span>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A dictionary or DataFrame containing all variables referenced in the
+model. Defaults to the data used to fit the model.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>compute_se</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to compute and return standard errors.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>block_size</code></b>
+              (<code><span title="int">int</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Number of rows to process at a time.  If None then block size
+is 1000 if data supplied, and the number of rows in the model frame
+otherwise.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="pymgcv.gam.BAM" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">BAM</span>
+
+
+</h2>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">BAM</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">predictors</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">AbstractTerm</span><span class="p">]</span> <span class="o">|</span> <span class="n">AbstractTerm</span><span class="p">],</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="o">*</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">family</span><span class="p">:</span> <span class="n">AbstractFamily</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">add_intercepts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+        <p>A big-data GAM (BAM) model.</p>
+
+        <p>Initialize the model.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>predictors</code></b>
+              (<code><span title="collections.abc.Mapping">Mapping</span>[<span title="str">str</span>, <span title="collections.abc.Iterable">Iterable</span>[<a class="autorefs autorefs-internal" title="            AbstractTerm (pymgcv.terms.AbstractTerm)" href="../terms/#pymgcv.terms.AbstractTerm">AbstractTerm</a>] | <a class="autorefs autorefs-internal" title="            AbstractTerm (pymgcv.terms.AbstractTerm)" href="../terms/#pymgcv.terms.AbstractTerm">AbstractTerm</a>]</code>)
+          –
+          <div class="doc-md-description">
+            <p>Dictionary mapping target variable names to an iterable of
+<a class="autorefs autorefs-internal" title="            AbstractTerm" href="../terms/#pymgcv.terms.AbstractTerm"><code>AbstractTerm</code></a> objects used to predict
+<span class="arithmatex">\(g([\mathbb{E}[Y])\)</span>.</p>
+<ul>
+<li>For simple models, this will usually be a single
+    key-value pair:
+    <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x1&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">)}</span>
+</span></code></pre></div></li>
+<li>For multivariate models, e.g. <a class="autorefs autorefs-internal" title="            MVN" href="../families/#pymgcv.families.MVN"><code>MVN</code></a>, the
+    dictionary will have multiple pairs:
+        <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span><span class="s2">&quot;y1&quot;</span><span class="p">:</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x1&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">),</span> <span class="s2">&quot;y2&quot;</span><span class="p">:</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">)}</span>
+</span></code></pre></div></li>
+<li>For multiparameter models, such as LSS-type models (e.g.
+<a class="autorefs autorefs-internal" title="            GauLSS" href="../families/#pymgcv.families.GauLSS"><code>GauLSS</code></a>), the first key-value pair
+must correspond to the variable name in the data (usually modelling the
+location), and the subsequent dictionary elements model the other
+parameters <strong>in the order as defined by the
+family</strong> (e.g. scale and shape). The names of these extra parameters,
+can be anything, and are used as column names for prediction outputs.
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x1&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">),</span> <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="n">S</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">)}</span>
+</span></code></pre></div></li>
+</ul>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>family</code></b>
+              (<code><a class="autorefs autorefs-internal" title="            AbstractFamily (pymgcv.families.AbstractFamily)" href="../families/#pymgcv.families.AbstractFamily">AbstractFamily</a> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Distribution family to use. See <a href="../families/">Families</a>
+for available options.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>add_intercepts</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If False, intercept terms must be manually added to the
+formulae using <a class="autorefs autorefs-internal" title="            Intercept" href="../terms/#pymgcv.terms.Intercept"><code>Intercept</code></a>. If True,
+automatically adds an intercept term to each formula. Intercepts are
+added as needed by methods, such that <code>gam.predictors</code> reflect the
+model as constructed (i.e. before adding intercepts).</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.BAM.fit" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">fit</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">fit</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">data</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="n">Series</span><span class="p">],</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="o">*</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="s2">&quot;fREML&quot;</span><span class="p">,</span> <span class="s2">&quot;GCV.Cp&quot;</span><span class="p">,</span> <span class="s2">&quot;GACV.Cp&quot;</span><span class="p">,</span> <span class="s2">&quot;REML&quot;</span><span class="p">,</span> <span class="s2">&quot;P-REML&quot;</span><span class="p">,</span> <span class="s2">&quot;ML&quot;</span><span class="p">,</span> <span class="s2">&quot;P-ML&quot;</span><span class="p">,</span> <span class="s2">&quot;NCV&quot;</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fREML&quot;</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">weights</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="n">Series</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">scale</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;unknown&quot;</span><span class="p">],</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">select</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">knots</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">discrete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">samfrac</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">n_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">gc_level</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Self</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Fit the GAM.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>data</code></b>
+              (<code><span title="pandas.core.frame.DataFrame">DataFrame</span> | <span title="collections.abc.Mapping">Mapping</span>[<span title="str">str</span>, <span title="numpy.ndarray">ndarray</span> | <span title="pandas.core.series.Series">Series</span>]</code>)
+          –
+          <div class="doc-md-description">
+            <p>DataFrame or dictionary containing all variables referenced in the
+model. Note, using a dictionary is required when passing matrix-valued
+variables.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>method</code></b>
+              (<code><span title="typing.Literal">Literal</span>[&#39;fREML&#39;, &#39;GCV.Cp&#39;, &#39;GACV.Cp&#39;, &#39;REML&#39;, &#39;P-REML&#39;, &#39;ML&#39;, &#39;P-ML&#39;, &#39;NCV&#39;]</code>, default:
+                  <code>&#39;fREML&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Method for smoothing parameter estimation, matching the mgcv,
+options.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>weights</code></b>
+              (<code><span title="str">str</span> | <span title="numpy.ndarray">ndarray</span> | <span title="pandas.core.series.Series">Series</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Observation weights. Either a string, matching a column name,
+or a array/series with length equal to the number of observations.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>scale</code></b>
+              (<code><span title="typing.Union">Union</span>[<span title="typing.Literal">Literal</span>[&#39;unknown&#39;], <span title="float">float</span>, <span title="int">int</span>, <span title="NoneType">NoneType</span>]</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If a number is provided, it is treated as a known scale parameter.
+If left to None, the scale parameter is 1 for Poisson and binomial and
+unknown otherwise. Note that (RE)ML methods can only work with scale
+parameter 1 for the Poisson and binomial cases.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>select</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If set to True then gam can add an extra penalty to each term so
+that it can be penalized to zero. This means that the smoothing
+parameter estimation during fitting can completely remove terms
+from the model. If the corresponding smoothing parameter is estimated as
+zero then the extra penalty has no effect. Use gamma to increase level
+of penalization.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>gamma</code></b>
+              (<code><span title="float">float</span> | <span title="int">int</span></code>, default:
+                  <code>1</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Increase this beyond 1 to produce smoother models. gamma multiplies
+the effective degrees of freedom in the GCV or UBRE/AIC. gamma can be
+viewed as an effective sample size in the GCV score, and this also
+enables it to be used with REML/ML. Ignored with P-RE/ML or the efs
+optimizer.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>knots</code></b>
+              (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="numpy.ndarray">ndarray</span>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Dictionary mapping covariate names to knot locations.
+For most bases, the length of the knot locations should match with a
+user supplied <code>k</code> value. E.g. for <code>S("x", k=64)</code>, you could
+pass <code>knots={"x": np.linspace(0, 1, 64)}</code>. For multidimensional
+smooths, e.g. <code>S("x", "z", k=64)</code>, you could create a grid of
+coordinates:</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">X</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">knots</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">X</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">Z</span><span class="o">.</span><span class="n">ravel</span><span class="p">()}</span>
+</span></code></pre></div>
+</div>
+<p>Note if using
+<a class="autorefs autorefs-internal" title="            ThinPlateSpline" href="../basis_functions/#pymgcv.basis_functions.ThinPlateSpline"><code>ThinPlateSpline</code></a>, this will
+avoid the eigen-decomposition used to find the basis, which although
+fast often leads to worse results. Different terms can use different
+numbers of knots, unless they share covariates.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>chunk_size</code></b>
+              (<code><span title="int">int</span></code>, default:
+                  <code>10000</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The model matrix is created in chunks of this size, rather than
+ever being formed whole. Reset to 4<em>p if chunk.size &lt; 4</em>p where p is the
+number of coefficients.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>discrete</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>if True and using method="fREML", discretizes covariates for
+storage and efficiency reasons.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>samfrac</code></b>
+              (<code><span title="float">float</span> | <span title="int">int</span></code>, default:
+                  <code>1</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If <code>0&lt;samfrac&lt;1</code>, performs a fast preliminary fitting step using
+a subsample of the data to improve convergence speed.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>n_threads</code></b>
+              (<code><span title="int">int</span></code>, default:
+                  <code>1</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Number of threads to use for fitting the GAM.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>gc_level</code></b>
+              (<code><span title="typing.Literal">Literal</span>[0, 1, 2]</code>, default:
+                  <code>0</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>0 uses R's garbage collector, 1 and 2 use progressively
+more frequent garbage collection, which takes time but reduces
+memory requirements.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.BAM.predict" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">predict</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">data</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="n">Series</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="o">*</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">compute_se</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">block_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50000</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">discrete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">n_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">gc_level</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pymgcv</span><span class="o">.</span><span class="n">custom_types</span><span class="o">.</span><span class="n">FitAndSE</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute model predictions with uncertainty estimates.</p>
+<p>Makes predictions for new data using the fitted GAM model. Predictions
+are returned on the link scale (linear predictor scale), not the response
+scale. For response scale predictions, apply the appropriate inverse link
+function to the results.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>data</code></b>
+              (<code><span title="pandas.core.frame.DataFrame">DataFrame</span> | <span title="collections.abc.Mapping">Mapping</span>[<span title="str">str</span>, <span title="numpy.ndarray">ndarray</span> | <span title="pandas.core.series.Series">Series</span>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A dictionary or DataFrame containing all variables referenced in the
+model. Defaults to the data used to fit the model.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>compute_se</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to compute and return standard errors.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>type</code></b>
+              (<code><span title="typing.Literal">Literal</span>[&#39;link&#39;, &#39;response&#39;]</code>, default:
+                  <code>&#39;link&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Type of prediction to compute. Either "link" for linear predictor
+scale or "response" for response scale.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>block_size</code></b>
+              (<code><span title="int">int</span></code>, default:
+                  <code>50000</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Number of rows to process at a time.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>n_threads</code></b>
+              (<code><span title="int">int</span></code>, default:
+                  <code>1</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Number of threads to use for computation.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>discrete</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If True and the model was fitted with discrete=True, then
+uses discrete prediction methods in which covariates are
+discretized for efficiency for storage and efficiency reasons.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>gc_level</code></b>
+              (<code><span title="typing.Literal">Literal</span>[0, 1, 2]</code>, default:
+                  <code>0</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>0 uses R's garbage collector, 1 and 2 use progressively
+more frequent garbage collection, which takes time but reduces
+memory requirements.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.BAM.partial_effects" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">partial_effects</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">partial_effects</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">data</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="n">Series</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="o">*</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">compute_se</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">block_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50000</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">n_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">discrete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">gc_level</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pymgcv</span><span class="o">.</span><span class="n">custom_types</span><span class="o">.</span><span class="n">FitAndSE</span><span class="p">[</span><span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]]</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute partial effects for all model terms.</p>
+<p>Calculates the contribution of each model term to the overall prediction.
+This decomposition is useful for understanding which terms contribute most
+to predictions and for creating partial effect plots. The sum of all fit columns
+equals the total prediction.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>data</code></b>
+              (<code><span title="pandas.core.frame.DataFrame">DataFrame</span> | <span title="collections.abc.Mapping">Mapping</span>[<span title="str">str</span>, <span title="numpy.ndarray">ndarray</span> | <span title="pandas.core.series.Series">Series</span>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A dictionary or DataFrame containing all variables referenced in the
+model. Defaults to the data used to fit the model.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>compute_se</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to compute and return standard errors.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>block_size</code></b>
+              (<code><span title="int">int</span></code>, default:
+                  <code>50000</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Number of rows to process at a time. Higher is faster
+but more memory intensive.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>n_threads</code></b>
+              (<code><span title="int">int</span></code>, default:
+                  <code>1</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Number of threads to use for computation.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>discrete</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If True and the model was fitted with discrete=True, then
+uses discrete prediction methods in which covariates are
+discretized for efficiency for storage and efficiency reasons.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>gc_level</code></b>
+              (<code><span title="typing.Literal">Literal</span>[0, 1, 2]</code>, default:
+                  <code>0</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>0 uses R's garbage collector, 1 and 2 use progressively
+more frequent garbage collection, which takes time but reduces
+memory requirements.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="pymgcv.gam.AbstractGAM" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">AbstractGAM</span>
+
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+
+
+        <p>Abstract base class for GAM models.</p>
+<p>This class cannot be initialized but provides a common interface for fitting and
+predicting using different types of GAM models.</p>
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="pymgcv.gam.AbstractGAM.referenced_variables" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">referenced_variables</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">referenced_variables</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>List of variables referenced by the model required to be present in data.</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.AbstractGAM.summary" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">summary</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">summary</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Generate an mgcv-style summary of the fitted GAM model.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.AbstractGAM.check_k" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">check_k</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">check_k</span><span class="p">(</span><span class="n">subsample</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">,</span> <span class="n">n_rep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">400</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Checking basis dimension choices (k).</p>
+<p>The default choices for <code>k</code> are relatively arbitrary. This function aids in
+assessing whether the chosen basis dimensions are appropriate. A low p-value can
+indicate that the chosen basis dimension is too low.</p>
+<p>The function works by constrasting a residual variance estimate based on near
+neighbour points (based on the covariates of a term), to the overall residual
+variance. The <code>k_index</code> is the ratio of the near neighbour estimate to the
+overall variance. The further below 1 the <code>k_index</code> is, the more likely it is
+that there exists missed patterns in the residuals. The p-value is generated
+using a randomization test to obtain the null distribution.</p>
+<p>For details, see section 5.9 of:</p>
+<div class="language-text highlight"><pre><span></span><code>Wood S.N. (2017) Generalized Additive Models: An Introduction with R (2nd
+edition). Chapman and Hall/CRC Press.
+</code></pre></div>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>subsample</code></b>
+              (<code><span title="int">int</span></code>, default:
+                  <code>5000</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The maximum number of points to use, above which a random
+subsample is used.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>n_rep</code></b>
+              (<code><span title="int">int</span></code>, default:
+                  <code>400</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The number of re-shuffles to do to get the p-value.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="DataFrame">DataFrame</span></code>
+          –
+          <div class="doc-md-description">
+            <p>A dataframe with the following columns:</p>
+<ul>
+<li><code>term</code>: The mgcv-style name of the smooth term.</li>
+<li><code>max_edf</code>: The maximum possible edf (often <code>k-1</code>).</li>
+<li><code>k_index</code>: The ratio between the nearest neighbour variance
+   residual variance estimate and the overall variance.</li>
+<li><code>p_value</code>: The p-value of the randomization test.</li>
+<li><code>max_edf</code>: The maximum effective degrees of freedom.</li>
+</ul>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.AbstractGAM.coefficients" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">coefficients</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">coefficients</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Series</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Extract model coefficients from the fitted GAM.</p>
+<p>Returns a series where the index if the mgcv-style name of the parameter.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.AbstractGAM.covariance" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">covariance</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">covariance</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="o">*</span><span class="p">,</span> <span class="n">sandwich</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">freq</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">unconditional</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Extract the covariance matrix from the fitted GAM.</p>
+<p>Extracts the Bayesian posterior covariance matrix of the parameters or
+frequentist covariance matrix of the parameter estimators from the fitted GAM.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>sandwich</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If True, compute sandwich estimate of covariance matrix.
+Currently expensive for discrete bam fits.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>freq</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If True, return the frequentist covariance matrix of the parameter
+estimators. If False, return the Bayesian posterior covariance matrix
+of the parameters. The latter option includes the expected squared bias
+according to the Bayesian smoothing prior.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>unconditional</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If True (and freq=False), return the Bayesian smoothing
+parameter uncertainty corrected covariance matrix, if available.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="DataFrame">DataFrame</span></code>
+          –
+          <div class="doc-md-description">
+            <p>The covariance matrix as a pandas dataframe where the column names and index</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+              <code><span title="DataFrame">DataFrame</span></code>
+          –
+          <div class="doc-md-description">
+            <p>are the mgcv-style parameter names.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.AbstractGAM.partial_effect" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">partial_effect</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">partial_effect</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">term</span><span class="p">:</span> <span class="n">AbstractTerm</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">target</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">data</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Series</span> <span class="o">|</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="o">*</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">compute_se</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pymgcv</span><span class="o">.</span><span class="n">custom_types</span><span class="o">.</span><span class="n">FitAndSE</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute the partial effect for a single model term.</p>
+<p>This method efficiently computes the contribution of one specific term
+to the model predictions.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>term</code></b>
+              (<code><a class="autorefs autorefs-internal" title="            AbstractTerm (pymgcv.terms.AbstractTerm)" href="../terms/#pymgcv.terms.AbstractTerm">AbstractTerm</a> | <span title="int">int</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The specific term to evaluate (must match a term used in the
+original model specification) or an integer index representing
+the position of the term in the target's predictor list</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>target</code></b>
+              (<code><span title="str">str</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Name of the target variable from the keys of <code>gam.predictors</code>. If
+set to None, the single predictor is used if only one is present,
+otherwise an error is raised.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>data</code></b>
+              (<code><span title="pandas.core.frame.DataFrame">DataFrame</span> | <span title="collections.abc.Mapping">Mapping</span>[<span title="str">str</span>, <span title="pandas.core.series.Series">Series</span> | <span title="numpy.ndarray">ndarray</span>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>DataFrame or dictionary containing the variables needed
+to compute the partial effect for the term.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>compute_se</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to compute and return standard errors</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.AbstractGAM.edf" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">edf</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">edf</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Series</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute the effective degrees of freedom (EDF) for the model coefficients.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="Series">Series</span></code>
+          –
+          <div class="doc-md-description">
+            <p>A series of EDF values, with the mgcv-style coefficient names as the index.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.AbstractGAM.penalty_edf" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">penalty_edf</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">penalty_edf</span><span class="p">()</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Computed the effective degrees of freedom (EDF) associated with each penalty.</p>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          –
+          <div class="doc-md-description">
+            <p>A series of EDF values, with the index being the mgcv-style name of the</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          –
+          <div class="doc-md-description">
+            <p>penalty.</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.AbstractGAM.partial_residuals" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">partial_residuals</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">partial_residuals</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">term</span><span class="p">:</span> <span class="n">AbstractTerm</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">target</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">data</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Series</span> <span class="o">|</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="o">*</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">avoid_scaling</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute partial residuals for model diagnostic plots.</p>
+<p>Partial residuals combine the fitted values from a specific term with
+the overall model residuals. They're useful for assessing whether the
+chosen smooth function adequately captures the relationship, or if a
+different functional form might be more appropriate.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>term</code></b>
+              (<code><a class="autorefs autorefs-internal" title="            AbstractTerm (pymgcv.terms.AbstractTerm)" href="../terms/#pymgcv.terms.AbstractTerm">AbstractTerm</a> | <span title="int">int</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The model term to compute partial residuals for. If an integer,
+it is interpreted as the index of the term in the predictor of
+<code>target</code>.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>target</code></b>
+              (<code><span title="str">str</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Name of the target variable (response variable or family
+parameter name from the model specification). If set to None, an error
+is raised when multiple predictors are present; otherwise, the sole
+available target is used.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>data</code></b>
+              (<code><span title="pandas.core.frame.DataFrame">DataFrame</span> | <span title="collections.abc.Mapping">Mapping</span>[<span title="str">str</span>, <span title="pandas.core.series.Series">Series</span> | <span title="numpy.ndarray">ndarray</span>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A dictionary or DataFrame containing all variables referenced in the
+model. Defaults to the data used to fit the model.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>avoid_scaling</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If True, and the term has a numeric by variable,
+the scaling by the by variable is not included in the term effect.
+This facilitates plotting the residuals, as the plots
+only show the smooth component (unscaled by the by variable).</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><span title="ndarray">ndarray</span></code>
+          –
+          <div class="doc-md-description">
+            <p>Series containing the partial residuals for the specified term</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.AbstractGAM.aic" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">aic</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">aic</span><span class="p">(</span><span class="n">k</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate Akaike's Information Criterion for fitted GAM models.</p>
+<p>Where possible (fitting <a class="autorefs autorefs-internal" title="            GAM" href="#pymgcv.gam.GAM"><code>GAM</code></a>/<a class="autorefs autorefs-internal" title="            BAM" href="#pymgcv.gam.BAM"><code>BAM</code></a>
+models with "ML" or "REML"), this uses the approach of Wood, Pya &amp; Saefken 2016,
+which accounts for smoothing parameter uncertainty, without favouring
+overly simple models.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>k</code></b>
+              (<code><span title="float">float</span></code>, default:
+                  <code>2</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Penalty per parameter (default 2 for classical AIC).</p>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pymgcv.gam.AbstractGAM.residuals" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">residuals</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">residuals</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        <span class="s2">&quot;deviance&quot;</span><span class="p">,</span> <span class="s2">&quot;pearson&quot;</span><span class="p">,</span> <span class="s2">&quot;scaled.pearson&quot;</span><span class="p">,</span> <span class="s2">&quot;working&quot;</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;deviance&quot;</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute the residuals for a fitted model.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>type</code></b>
+              (<code><span title="typing.Literal">Literal</span>[&#39;deviance&#39;, &#39;pearson&#39;, &#39;scaled.pearson&#39;, &#39;working&#39;, &#39;response&#39;]</code>, default:
+                  <code>&#39;deviance&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Type of residuals to compute, one of:</p>
+<ul>
+<li><strong>response</strong>: Raw residuals <span class="arithmatex">\(y - \mu\)</span>, where <span class="arithmatex">\(y\)</span> is the observed data
+    and <span class="arithmatex">\(\mu\)</span> is the model fitted value.</li>
+<li><strong>pearson</strong>: Pearson residuals — raw residuals divided by the square
+    root of the model's mean-variance relationship.
+    $$
+    \frac{y - \mu}{\sqrt{V(\mu)}}
+    $$</li>
+<li><strong>scaled.pearson</strong>: Raw residuals divided by the standard deviation of
+    the data according to the model mean variance relationship and
+    estimated scale parameter.</li>
+<li><strong>deviance</strong>: Deviance residuals as defined by the model’s family.</li>
+<li><strong>working</strong>: Working residuals are the residuals returned from
+    model fitting at convergence.</li>
+</ul>
+          </div>
+        </li>
+    </ul>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="pymgcv.gam.FitState" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">FitState</span>
+
+
+</h2>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">FitState</span><span class="p">(</span><span class="n">rgam</span><span class="p">:</span> <span class="n">ListVector</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="n">Series</span><span class="p">])</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+        <p>The mgcv gam, and the data used for fitting.</p>
+<p>This gets set as an attribute fit_state on the AbstractGAM object after fitting.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><span title="pymgcv.gam.FitState.rgam">rgam</span></code></b>
+          –
+          <div class="doc-md-description">
+            <p>The fitted mgcv gam object.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="pymgcv.gam.FitState.data">data</span></code></b>
+          –
+          <div class="doc-md-description">
+            <p>The data used for fitting.</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="pymgcv.gam.FitAndSE" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">FitAndSE</span>
+
+
+</h2>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">FitAndSE</span><span class="p">(</span><span class="n">fit</span><span class="p">:</span> <span class="o">~</span><span class="n">S</span><span class="p">,</span> <span class="n">se</span><span class="p">:</span> <span class="o">~</span><span class="n">S</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+        <p>Container for predictions or partial effects with standard errors.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><span title="pymgcv.gam.FitAndSE.fit">fit</span></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Predicted values or partial effect.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="pymgcv.gam.FitAndSE.se">se</span></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Standard errors of the predictions.</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "toc.integrate", "header.autohide", "content.code.copy"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
