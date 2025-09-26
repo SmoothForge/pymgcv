@@ -3,7 +3,7 @@ name = "pymgcv"
 authors = [{ name = "danielward27", email = "danielward27@outlook.com" }]
 description = "pymgcv: Generalized additive models using mgcv, in Python."
 requires-python = ">= 3.11"
-version = "0.0.10"
+version = "0.0.11"
 
 keywords = ["generalized additive models", "GAMs"]
 license = { file = "LICENSE" }
