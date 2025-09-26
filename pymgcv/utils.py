@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-
+from typing import Any
 import numpy as np
 import pandas as pd
 import rpy2.rinterface_lib.callbacks as rcb
@@ -44,14 +44,27 @@ def load_rdata_dataframe_from_url(url: str) -> pd.DataFrame:
         rcb.consolewrite_warnerror = rcb.consolewrite_print
 
 
-def get_data(name: str):
+def get_data(name: str) -> Any:
     """Get built-in R dataset.
 
-    Currently assumes that the dataset is a dataframe.
+    This generally assumes the dataset is a dataframe, and may not work consistently
+    for other types of data.
+
     """
     with ro.local_context() as lc:
         rutils.data(ro.rl(name), envir=lc)
-        return to_py(lc[name])
+        data = lc[name]
+
+        if isinstance(data, ro.ListVector) and not isinstance(
+            data,
+            ro.vectors.DataFrame,
+        ):
+            data = to_py(data)
+            names = np.asarray(list(data.names()))
+            vals = list(data.values())
+            return names, vals 
+
+        return to_py(data)
 
 
 def data_len(data: pd.DataFrame | Mapping[str, pd.Series | np.ndarray]) -> int:

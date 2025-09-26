@@ -6,3 +6,6 @@
 All the information and examples you need are in the **documentation**:
 
 - [Check out the documentation here!](https://SmoothForge.github.io/pymgcv/)
+
+If you like the project, please consider giving it a star on github!
+

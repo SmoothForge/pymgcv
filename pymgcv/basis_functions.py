@@ -8,25 +8,21 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 
-# The design here is a bit strange and warrants some explanation. We want a clean
-# interface, which means that ideally we can pass arguments to the basis that relate to
-# setting up the basis. MGCV instead uses xt and m to mean various things for different
-# basis functions, and passes this to s. To avoid that we store them with the basis and
-# provide a _pass_to_s method. Whilst it would be nice to just create the ro.RObjects as
-# a dictionary of kwargs and pass them to s, because s is evaluated in a formula
-# context, we have to map xt and m to strings (evaluated literally) or variable names.
-# xt can be large (e.g. arrays) so we cannot map this to a string, so we map it to
-# a variable name. m tends to be small, so we store it as a python variable and convert
-# to a string in the formula.
-from typing import TypedDict
-
 import numpy as np
 import rpy2.robjects as ro
 
+from pymgcv.formula_utils import _to_r_constructor_string, _Var
+from pymgcv.rpy_utils import to_rpy
 
-class _PassToS(TypedDict, total=False):
-    xt: ro.ListVector
-    m: int | float | ro.IntVector | ro.FloatVector
+# The design here is a bit strange and warrants some explanation. We want an intuitive
+# interface. For this reason, we handle xt and m within the basis, whereas mgcv uses
+# these as arguments to the s function (meaning different things depending on the
+# basis). These arguments need to be internally forwared to s, within a formula context.
+# The two most obvious solutions are converting to a string representation of R code,
+# or assigning them to an R variable. We choose to do the latter, which is probably
+# more robust/efficient/simple for complex cases, (e.g. where xt is a list of arrays).
+# Here however, we just provide the methods for getting the xt/m as the appropriate R
+# type, then we handle them in smooths
 
 
 class AbstractBasis(ABC):
@@ -47,25 +43,25 @@ class AbstractBasis(ABC):
         ...
 
     @abstractmethod
-    def _pass_to_s(self) -> _PassToS:
-        """Basis specific arguments to pass to mgcv.s.
-
-        This handles:
-        - `m`:  Basis penalties, orders, and more.
-        - `xt`: Various arguments for specific basis functions.
-
-        Some arguments to `mgcv.s` are specific to the basis funcions used,
-        primarily `m` and `xt`. To make a more intuitive interface, we handle
-        passing of these arguments to `mgcv.s`. Note the string should
-        include the leading comma if it is not empty.
-
-
-
-        Returns:
-            A dictionary, mapping a keyword (e.g. xt or m) to a dictionary of
-            variable values.
-        """
+    def _get_xt(self) -> None | ro.ListVector | _Var:
+        """Get the xt argument for the smooth (or None if not needed)."""
         ...
+
+    @abstractmethod
+    def _get_m(self) -> int | float | ro.Vector | None:
+        """Get the m argument for the smooth (or None if not needed)."""
+        ...
+
+    def _m_and_xt_args(self) -> list[str]:
+        """Arguments to pass to s for this basis.
+
+        Each argument is a string respresentation, e.g. ["m=1", "xt=c(1,2)"].
+        """
+        args = []
+        for k, v in {"xt": self._get_xt(), "m": self._get_m()}.items():
+            if v is not None:
+                args.append(f"{k}={_to_r_constructor_string(v)}")
+        return args
 
 
 @dataclass
@@ -94,8 +90,11 @@ class RandomEffect(AbstractBasis):
         """Return mgcv identifier for random effects."""
         return "re"
 
-    def _pass_to_s(self) -> _PassToS:
-        return {}
+    def _get_xt(self) -> None | ro.ListVector | _Var:
+        return None
+
+    def _get_m(self) -> int | float | ro.IntVector | ro.FloatVector | None:
+        return None
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -120,15 +119,13 @@ class ThinPlateSpline(AbstractBasis):
         """Return mgcv identifier: 'ts' for shrinkage, 'tp' for standard."""
         return "ts" if self.shrinkage else "tp"
 
-    def _pass_to_s(self) -> _PassToS:
-        pass_to_s: _PassToS = {}
-        if self.m is not None:
-            pass_to_s["m"] = self.m
+    def _get_xt(self) -> ro.ListVector | None | _Var:
         if self.max_knots is not None:
-            listvec = ro.ListVector([self.max_knots])
-            listvec.names = ["max.knots"]
-            pass_to_s["xt"] = listvec
-        return pass_to_s
+            return ro.ListVector({"max.knots": self.max_knots})
+        return None
+
+    def _get_m(self):
+        return self.m
 
 
 @dataclass
@@ -161,14 +158,21 @@ class FactorSmooth(AbstractBasis):
         """Return mgcv identifier for random effects."""
         return "fs"
 
-    def _pass_to_s(self) -> _PassToS:
+    def _get_xt(self) -> None | ro.ListVector | _Var:
         listvec = ro.ListVector({"bs": str(self.bs)})
-        to_s = self.bs._pass_to_s()
-        if "xt" in to_s:
-            to_s["xt"] = to_s["xt"] + listvec
-        else:
-            to_s["xt"] = listvec
-        return to_s
+        xt = self.bs._get_xt()
+        if xt is not None:
+            if isinstance(xt, _Var):
+                xt_value = ro.globalenv[xt.name]
+                combined = xt_value + listvec
+                varname = f".xt_{id(self)}"
+                ro.globalenv[varname] = combined
+                return _Var(varname)
+            return xt + listvec
+        return listvec
+
+    def _get_m(self) -> int | float | ro.Vector | None:
+        return self.bs._get_m()
 
 
 @dataclass(kw_only=True)
@@ -207,9 +211,11 @@ class CubicSpline(AbstractBasis):
         """Return mgcv identifier: 'cs', 'cc', or 'cr'."""
         return "cs" if self.shrinkage else "cc" if self.cyclic else "cr"
 
-    def _pass_to_s(self) -> _PassToS:
-        """No additional parameters needed for cubic splines."""
-        return {}
+    def _get_m(self) -> int | float | ro.Vector | None:
+        return None
+
+    def _get_xt(self) -> None | ro.ListVector | _Var:
+        return None
 
 
 @dataclass(kw_only=True)
@@ -248,8 +254,11 @@ class DuchonSpline(AbstractBasis):
         """Return mgcv identifier for Duchon splines."""
         return "ds"
 
-    def _pass_to_s(self) -> _PassToS:
-        return {"m": ro.FloatVector([self.m, self.s])}
+    def _get_m(self) -> int | float | ro.Vector | None:
+        return ro.FloatVector([self.m, self.s])
+
+    def _get_xt(self) -> None | ro.ListVector | _Var:
+        return None
 
 
 @dataclass(kw_only=True)
@@ -274,9 +283,11 @@ class SplineOnSphere(AbstractBasis):
         """Return mgcv identifier for splines on sphere."""
         return "sos"
 
-    def _pass_to_s(self) -> _PassToS:
-        """No additional parameters needed for splines on sphere."""
-        return {}
+    def _get_m(self) -> int | float | ro.Vector | None:
+        return self.m
+
+    def _get_xt(self) -> None | ro.ListVector | _Var:
+        return None
 
 
 @dataclass
@@ -305,8 +316,11 @@ class BSpline(AbstractBasis):
         """Return mgcv identifier for B-splines."""
         return "bs"
 
-    def _pass_to_s(self) -> _PassToS:
-        return {"m": ro.IntVector([self.degree] + self.penalty_orders)}
+    def _get_m(self) -> int | float | ro.Vector | None:
+        return ro.IntVector([self.degree] + self.penalty_orders)
+
+    def _get_xt(self) -> None | ro.ListVector | _Var:
+        return None
 
 
 @dataclass(kw_only=True)
@@ -338,31 +352,82 @@ class PSpline(AbstractBasis):
         """Return mgcv identifier: 'cp' for cyclic, 'ps' for standard."""
         return "cp" if self.cyclic else "ps"
 
-    def _pass_to_s(self) -> _PassToS:
+    def _get_m(self) -> int | float | ro.Vector | None:
         # Note (unlike b-splines) seems mgcv uses m[1] for the penalty order, not degree so subtract 1
-        return {"m": ro.IntVector([self.degree - 1, self.penalty_order])}
+        return ro.IntVector([self.degree - 1, self.penalty_order])
+
+    def _get_xt(self) -> None | ro.ListVector | _Var:
+        return None
 
 
-@dataclass(kw_only=True)
 class MarkovRandomField(AbstractBasis):
-    """Markov Random Field basis for discrete spatial data with neighborhood structure.
+    """Intrinsic Gaussian Markov random field for discrete spatial data.
 
-    The smoothing penalty encourages similar value in neighboring locations. When using
-    this basis, the variable passed to [`S`][pymgcv.terms.S] should be a
-    categorical variable representing the area labels.
+    The smoothing penalty encourages similar value in neighboring locations. The
+    variable used in the corresponding smooth should be a categorical variable
+    with strings represenging the area labels.
+
+    Should be constructed using either polygons or neighborhood structure. For
+    plotting, the polygon structure is required.
+
+    !!! example
+
+        For an example, see the
+        [markov random field crime example](../examples/markov_random_field_crime.ipynb).
 
     Args:
-        polys: List of numpy arrays defining the spatial polygons or
-            neighborhood structure. Each array represents the boundary
-            or connectivity information for a spatial unit.
+        polys: Dictionary mapping levels of the categorical variable to the
+            polygons structure arrays. Each array should have two columns,
+            representing the coordinates of the vertices.
+        neighbours: Dictionary mapping levels of the categorical variable to
+            a list or numpy array of strings corresponding neighbours for that level.
     """
 
-    polys: list[np.ndarray]
+    polys: dict[str, np.ndarray] | None
+    neighbours: dict[str, np.ndarray] | None
+
+    def __init__(
+        self,
+        *,
+        polys: dict[str, np.ndarray] | None = None,
+        neighbours: dict[str, np.ndarray] | dict[str, list[str]] | None = None,
+    ):
+        neither = polys is None and neighbours is None
+        both = polys is not None and neighbours is not None
+
+        if neither | both:
+            raise ValueError("Exactly one of polys or neighbours must be provided.")
+
+        self.polys = polys
+        self.neighbours = (
+            {k: np.asarray(v) for k, v in neighbours.items()}
+            if neighbours is not None
+            else None
+        )
 
     def __str__(self) -> str:
         """Return mgcv identifier for Markov Random Fields."""
         return "mrf"
 
-    def _pass_to_s(self) -> _PassToS:
-        """Return spatial structure parameters - NOT YET IMPLEMENTED."""
-        raise NotImplementedError()
+    def __repr__(self):
+        """Simplified representation (avoiding displaying arrays)."""
+        kw = "polys" if self.polys is not None else "neighbours"
+        return f"MarkovRandomField({kw}=dict)"
+
+    def _get_m(self) -> int | float | ro.Vector | None:
+        return None
+
+    def _get_xt(self) -> None | ro.ListVector | _Var:
+        if self.polys is None:
+            assert self.neighbours is not None
+            kw = "nb"
+            dict_ = self.neighbours
+        else:
+            kw = "polys"
+            dict_ = self.polys
+        polys_or_nb = ro.ListVector({k: to_rpy(v) for k, v in dict_.items()})
+        polys_or_nb = ro.ListVector({kw: polys_or_nb})
+        # Only really practical to assign to a variable here.
+        varname = f".xt_{id(self)}"
+        ro.globalenv[varname] = polys_or_nb
+        return _Var(varname)

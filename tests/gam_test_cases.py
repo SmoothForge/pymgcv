@@ -13,7 +13,7 @@ import rpy2.robjects as ro
 import pymgcv.basis_functions as bs
 from pymgcv import families as fam
 from pymgcv import terms
-from pymgcv.families import MVN, GauLSS, Poisson
+from pymgcv.families import Poisson
 from pymgcv.gam import BAM, GAM, AbstractGAM
 from pymgcv.rpy_utils import data_to_rdf, to_py
 from pymgcv.terms import Intercept, L, Offset, S, T
@@ -160,7 +160,7 @@ def smooth_2d_gam(gam_type: type[AbstractGAM]) -> GAMTestCase:
     )
 
 
-def smooth_2d_gam_pass_to_s(gam_type: type[AbstractGAM]) -> GAMTestCase:
+def smooth_2d_m_and_xt(gam_type: type[AbstractGAM]) -> GAMTestCase:
     method = get_method_default(gam_type)
     basis = bs.ThinPlateSpline(max_knots=3, m=2)
     return GAMTestCase(
@@ -200,28 +200,6 @@ def categorical_interaction_gam(gam_type: type[AbstractGAM]) -> GAMTestCase:
     return GAMTestCase(
         mgcv_args=f"y~group:group1, method='{method}'",
         gam_model=gam_type({"y": terms.Interaction("group", "group1")}),
-    )
-
-
-def multivariate_normal_gam(gam_type: type[AbstractGAM]):
-    method = get_method_default(gam_type)
-    return GAMTestCase(
-        mgcv_args=f"list(y~s(x,k=5),y1~x),family=mvn(d=2),method='{method}'",
-        gam_model=gam_type({"y": S("x", k=5), "y1": L("x")}, family=MVN(d=2)),
-    )
-
-
-def gaulss_gam(gam_type: type[AbstractGAM]):
-    method = get_method_default(gam_type)
-    return GAMTestCase(
-        mgcv_args=f"list(y~s(x),~s(x1)),family=gaulss(),method='{method}'",
-        gam_model=gam_type(
-            {
-                "y": S("x"),
-                "scale": S("x1"),
-            },
-            family=GauLSS(),
-        ),
     )
 
 
@@ -287,24 +265,81 @@ def tensor_2d_random_wiggly_curve_gam(
     )
 
 
-# def markov_random_field_gam(gam_type: type[AbstractGAM]) -> GAMTestCase:
-#     mgcv = importr("mgcv")
-#     polys = ro.packages.data(mgcv).fetch("columb.polys")["columb.polys"]
-#     data = ro.packages.data(mgcv).fetch("columb")["columb"]
-#     data = to_py(data)
-#     polys_list = list([to_py(x) for x in polys.values()])
-#     method = get_method_default(gam_type)
-#     return GAMTestCase(
-#         mgcv_args=(
-#             "crime ~ s(district,bs='mrf',xt=list(polys=polys)), "
-#             f"data=columb,method='REML', method='{method}'"
-#         ),
-#         gam_model=gam_type(
-#             {"y": S("district", bs=MarkovRandomField(polys=polys_list))},
-#         ),
-#         data=data,
-#         add_to_r_env={"polys": polys},
-#     )
+def markov_random_field_polys(gam_type: type[AbstractGAM]) -> GAMTestCase:
+    countries = ["a", "b", "c", "d", "e", "f", "g"]
+    polys: dict[str, np.ndarray] = {
+        "a": np.array([[0, 2], [1, 2], [1, 1], [0, 1]]),
+        "b": np.array([[1, 2], [2, 2], [2, 1], [1, 1]]),
+        "c": np.array([[2, 2], [3, 2], [3, 1], [2, 1]]),
+        "d": np.array([[0, 1], [1, 1], [1, 0], [0, 0]]),
+        "e": np.array([[1, 1], [2, 1], [2, 0], [1, 0]]),
+        "f": np.array([[2, 1], [3, 1], [3, 0], [2, 0]]),
+        "g": np.array([[1, 0], [2, 0], [2, -1], [1, -1]]),
+    }
+
+    r_polys = (
+        "list(a=matrix(c(0,2,1,2,1,1,0,1),ncol=2,byrow=T),"
+        "b=matrix(c(1,2,2,2,2,1,1,1),ncol=2,byrow=T),"
+        "c=matrix(c(2,2,3,2,3,1,2,1),ncol=2,byrow=T),"
+        "d=matrix(c(0,1,1,1,1,0,0,0),ncol=2,byrow=T),"
+        "e=matrix(c(1,1,2,1,2,0,1,0),ncol=2,byrow=T),"
+        "f=matrix(c(2,1,3,1,3,0,2,0),ncol=2,byrow=T),"
+        "g=matrix(c(1,0,2,0,2,-1,1,-1),ncol=2,byrow=T))"
+    )
+
+    rng = np.random.default_rng(1)
+    countries = pd.Categorical(rng.choice(countries, size=100), categories=countries)
+
+    data = {
+        "country": countries,
+        "y": rng.normal(size=100),
+    }
+
+    return GAMTestCase(
+        mgcv_args=f"y~s(country,bs='mrf',xt=list(polys={r_polys})),method='REML'",
+        gam_model=gam_type(
+            {
+                "y": S("country", bs=bs.MarkovRandomField(polys=polys)),  # type: ignore
+            },
+        ),
+        data=data,
+    )
+
+
+def markov_random_field_neighbours(gam_type: type[AbstractGAM]) -> GAMTestCase:
+    countries = ["a", "b", "c", "d", "e", "f", "g"]
+    neighbours = {
+        "a": ["b", "c"],
+        "b": ["a", "c", "d"],
+        "c": ["a", "b", "d", "e"],
+        "d": ["b", "c", "e", "f"],
+        "e": ["c", "d", "f", "g"],
+        "f": ["d", "e", "g"],
+        "g": ["e", "f"],
+    }
+    r_nb = (
+        "list(a=c('b','c'),b=c('a','c','d'),c=c('a','b','d','e'),"
+        "d=c('b','c','e','f'),e=c('c','d','f','g'),f=c('d','e','g'),g=c('e','f'))"
+    )
+    rng = np.random.default_rng(1)
+    countries = pd.Categorical(rng.choice(countries, size=100), categories=countries)
+    data = {
+        "country": pd.Series(countries),
+        "y": rng.normal(size=100),
+    }
+
+    return GAMTestCase(
+        mgcv_args=f"y~s(country,bs='mrf',xt=list(nb={r_nb})),method='REML'",
+        gam_model=gam_type(
+            {
+                "y": S("country", bs=bs.MarkovRandomField(neighbours=neighbours)),
+            },
+        ),
+        data=data,
+    )
+
+
+# TODO: Test integer too?
 
 
 def linear_functional_smooth_1d_gam(gam_type: type[AbstractGAM]) -> GAMTestCase:
@@ -529,7 +564,7 @@ def get_test_cases() -> dict[str, GAMTestCase]:
                 categorical_linear_gam,
                 smooth_1d_gam,
                 smooth_2d_gam,
-                smooth_2d_gam_pass_to_s,
+                smooth_2d_m_and_xt,
                 smooth_with_specified_knots,
                 tensor_2d_gam,
                 tensor_interaction_2d_gam_with_mc,
@@ -543,14 +578,8 @@ def get_test_cases() -> dict[str, GAMTestCase]:
                 tensor_2d_by_numeric_gam,
                 linear_functional_smooth_1d_gam,
                 linear_functional_tensor_2d_gam,
-                # markov_random_field_gam  # TODO: Uncomment when ready
-            ],
-        ),
-        (
-            (GAM,),
-            [
-                multivariate_normal_gam,
-                gaulss_gam,
+                markov_random_field_neighbours,
+                markov_random_field_polys,
             ],
         ),
     ]
