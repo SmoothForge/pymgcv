@@ -47,7 +47,7 @@ test_cases = get_test_cases()
 
 @pytest.mark.parametrize(
     "test_case",
-    [test_cases["GAM - gaulss_gam"]],
+    [test_cases["GauLSS"]],
 )  # TODO add others.
 @pytest.mark.parametrize("qq_fun", [qq_simulate])
 def test_qq_functions_lss(test_case: GAMTestCase, qq_fun):

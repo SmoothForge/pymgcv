@@ -84,7 +84,6 @@ def qq_simulate(
     )
 
 
-# TODO support normal. For this logp in cdf matters!
 def qq_transform(
     gam: AbstractGAM,
     *,
@@ -133,6 +132,7 @@ def qq_transform(
         @staticmethod
         def quantile(probs):
             q = norm.ppf(probs)
+            # Below not perfect, but will make clear there is a problem
             return np.nan_to_num(q, nan=np.nan, posinf=100, neginf=-100)
 
         @staticmethod

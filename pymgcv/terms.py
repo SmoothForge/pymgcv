@@ -14,7 +14,7 @@ from pymgcv.basis_functions import AbstractBasis
 from pymgcv.custom_types import FitAndSE
 from pymgcv.formula_utils import _to_r_constructor_string, _Var
 from pymgcv.rlibs import rbase, rmgcv, rstats
-from pymgcv.rpy_utils import data_to_rdf, to_py
+from pymgcv.rpy_utils import data_to_rdf, is_null, to_py
 from pymgcv.utils import data_len
 
 # TODO: Not supporting 'sp' or 'pc' basis types.
@@ -277,6 +277,8 @@ class Interaction(AbstractParametric):
 class AbstractSmooth(AbstractTerm):
     """Abstract class for smooth terms (including tensor smooths)."""
 
+    bs: AbstractBasis | None
+
     def _partial_effect(
         self,
         *,
@@ -387,6 +389,18 @@ class AbstractSmooth(AbstractTerm):
             return FitAndSE(pred, se)
         return pred
 
+    def _add_xt_and_m_to_renv(self) -> list[str]:
+        """Adds xt and m to the r env and returns a list string arguments."""
+        args = []
+        if self.bs is not None:
+            xt, m = self.bs._get_xt(), self.bs._get_m()
+            for k, v in {"xt": xt, "m": m}.items():
+                if v is not None:
+                    varname = f".{k}_{id(self)}"  # id to avoid conflicts
+                    ro.globalenv[varname] = xt
+                    args.append(f"{k}={varname}")
+        return args
+
 
 @dataclass
 class S(AbstractSmooth):
@@ -454,7 +468,7 @@ class S(AbstractSmooth):
         kwargs["fx"] = self.fx if self.fx else None
         varnames = kwargs.pop("varnames")
         if self.bs is not None:
-            kwargs = kwargs | self.bs._pass_to_s()
+            kwargs = kwargs | {"xt": self.bs._get_xt(), "m": self.bs._get_m()}
         kwargs["by"] = _Var(self.by) if self.by is not None else None
         kwargs["bs"] = str(self.bs) if self.bs is not None else None
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
@@ -569,16 +583,21 @@ class T(AbstractSmooth):
         def _handle_bs(bs):  # Returns bs, m, xt compatible with R
             match bs:
                 case AbstractBasis():
-                    from_bases = bs._pass_to_s()
+                    from_bases = {"xt": bs._get_xt(), "m": bs._get_m()}
+
                     return str(bs), from_bases.get("m"), from_bases.get("xt")
                 case tuple():
-                    from_bases = [b._pass_to_s() for b in bs]
+                    from_bases = [{"xt": b._get_xt(), "m": b._get_m()} for b in bs]
+                    from_bases = [
+                        {k: v for k, v in d.items() if v is not None}
+                        for d in from_bases
+                    ]
                     bs_vec = ro.StrVector([str(b) for b in bs])
                     m = [bs.get("m", ro.NA_Logical) for bs in from_bases]
                     if all(el == ro.NA_Logical for el in m):
                         m = None
                     xt = [bs.get("xt", ro.NULL) for bs in from_bases]
-                    if all(el == ro.NULL for el in xt):
+                    if all(is_null(el) for el in xt):
                         xt = None
                     return bs_vec, m, xt
                 case _:

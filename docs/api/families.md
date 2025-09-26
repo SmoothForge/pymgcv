@@ -2,6 +2,11 @@
 
 Families define the distribution and link functions for GAM models. Each family corresponds to a statistical distribution and supports specific link functions.
 
+!!! Note
+  These families correspond to thin wrappers around R families, for example from mgcv or the stats package.
+  The documentation here is more concise than those in the corresponding R packages. If useful information
+  is missing, please consider contributing by making a pull request!
+
 ## Continuous response
 ::: pymgcv.families.Gaussian
 ::: pymgcv.families.Gamma

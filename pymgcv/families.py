@@ -763,3 +763,11 @@ class CoxPH(AbstractFamily):
 
     def __init__(self):
         raise NotImplementedError()
+
+
+@dataclass
+class CoxPHT(AbstractFamily):
+    """Not yet implemented."""
+
+    def __init__(self):
+        raise NotImplementedError()

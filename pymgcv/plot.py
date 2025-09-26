@@ -1,7 +1,7 @@
 """Plotting utilities for visualizing GAM models."""
 
 import types
-from collections.abc import Callable, Iterable, Mapping
+from collections.abc import Callable, Mapping
 from copy import deepcopy
 from dataclasses import dataclass
 from math import ceil
@@ -12,12 +12,14 @@ import numpy as np
 import pandas as pd
 from matplotlib import rcParams
 from matplotlib.axes import Axes
+from matplotlib.collections import PatchCollection
 from matplotlib.figure import Figure
+from matplotlib.patches import Polygon
 from pandas import CategoricalDtype
 from pandas.api.types import is_numeric_dtype
 from scipy.stats import norm
 
-from pymgcv.basis_functions import FactorSmooth, RandomEffect
+from pymgcv.basis_functions import FactorSmooth, MarkovRandomField, RandomEffect
 from pymgcv.gam import AbstractGAM
 from pymgcv.qq import QQResult, qq_simulate
 from pymgcv.terms import (
@@ -172,7 +174,7 @@ def _get_term_plotter(
     match (dim, term):
         case (1, L()) if isinstance(dtypes[term.varnames[0]], CategoricalDtype):
 
-            def _plot_wrapper(axes: Iterable[Axes], **kwargs: Any):
+            def _plot_wrapper(axes: list[Axes], **kwargs: Any):
                 axes[0] = categorical(
                     term=term,
                     gam=gam,
@@ -187,7 +189,7 @@ def _get_term_plotter(
 
         case (1, S()) if isinstance(term.bs, RandomEffect):
 
-            def _plot_wrapper(axes: Iterable[Axes], **kwargs: Any):
+            def _plot_wrapper(axes: list[Axes], **kwargs: Any):
                 axes[0] = random_effect(
                     term=term,
                     gam=gam,
@@ -199,11 +201,25 @@ def _get_term_plotter(
 
             return _TermPlotter(_plot_wrapper, random_effect, target)
 
-        # TODO "re" basis?
+        case (1, S()) if (
+            isinstance(term.bs, MarkovRandomField) and term.bs.polys is not None
+        ):
+
+            def _plot_wrapper(axes: list[Axes], **kwargs: Any):
+                axes[0] = markov_random_field(
+                    term=term,
+                    gam=gam,
+                    target=target,
+                    ax=axes[0],
+                    **kwargs,
+                )
+                return axes
+
+            return _TermPlotter(_plot_wrapper, random_effect, target)
 
         case (1, AbstractTerm()) if _all_numeric(dtypes):
 
-            def _plot_wrapper(axes: Iterable[Axes], **kwargs: Any):
+            def _plot_wrapper(axes: list[Axes], **kwargs: Any):
                 for level in levels:
                     axes[0] = continuous_1d(
                         term=term,
@@ -223,7 +239,7 @@ def _get_term_plotter(
 
         case (2, AbstractTerm()) if _all_numeric(dtypes):
 
-            def _plot_wrapper(axes: Iterable[Axes], **kwargs: Any):
+            def _plot_wrapper(axes: list[Axes], **kwargs: Any):
                 for i, level in enumerate(levels):
                     axes[i] = continuous_2d(
                         term=term,
@@ -600,11 +616,10 @@ def categorical(
     errorbar_kwargs.setdefault("fmt", ".")
 
     ax = plt.gca() if ax is None else ax
-    vals = data[term.varnames[0]]
+    vals = pd.Series(data[term.varnames[0]])
 
     if not isinstance(vals.dtype, CategoricalDtype):
         raise TypeError("The variable must be categorical in the data.")
-    assert isinstance(vals, pd.Series)
 
     levels = pd.Series(
         vals.cat.categories,
@@ -767,6 +782,82 @@ def random_effect(
     )
     ax.set_xlabel("Gaussian Quantiles")
     ax.set_ylabel(f"{term.varnames[0]} effect")
+    return ax
+
+
+def markov_random_field(
+    *,
+    term: S | int,
+    gam: AbstractGAM,
+    target: str | None = None,
+    ax: Axes | None = None,
+    **kwargs,
+):
+    """Plot a Markov Random Field spatial smooth.
+
+    This function visualizes spatial data using polygons defined by the Markov Random Field
+    basis function, colored by the partial effects of the fitted GAM model.
+
+    Args:
+        term: Either a smooth term object or an integer index of the term to plot.
+        gam: The fitted GAM model containing the term.
+        target: The target variable name when multiple predictors are present.
+            If None and only one predictor exists, it will be used automatically.
+        ax: Matplotlib axes to plot on. If None, uses current axes.
+        **kwargs: Additional keyword arguments passed to PatchCollection for
+            customizing the appearance of polygons (e.g., edgecolor, linewidth,
+            facecolor, alpha, etc.).
+
+    Returns:
+        The matplotlib axes object with the plot.
+
+    Raises:
+        ValueError: If the model is not fitted, target is not specified with multiple
+            predictors, or polygons are not defined in the basis.
+        TypeError: If the term is not a smooth term with MarkovRandomField basis.
+    """
+    if gam.fit_state is None:
+        raise ValueError("The model must be fitted before plotting.")
+
+    data = gam.fit_state.data
+
+    if target is None:
+        if len(gam.predictors) > 1:
+            raise ValueError(
+                "Target must be specified when multiple predictors are present.",
+            )
+        target = list(gam.predictors.keys())[0]
+
+    if isinstance(term, int):
+        term = gam.predictors[target][term]  # type: ignore checked below
+
+    if not isinstance(term, S) or not isinstance(term.bs, MarkovRandomField):
+        raise TypeError("Term must be a smooth term with a MarkovRandomField basis.")
+
+    if term.bs.polys is None:
+        raise ValueError("Cannot plot MarkovRandomField with unknown polygons.")
+
+    if ax is None:
+        ax = plt.gca()
+
+    polys = term.bs.polys
+    var = term.varnames[0]
+    categories = pd.Series(data[var]).cat.categories.astype(data[var].dtype)
+    partial_effect = gam.partial_effect(term=0, data={var: categories})
+    patches = []
+    for level in categories:
+        patches.append(Polygon(polys[level]))
+
+    kwargs.setdefault("edgecolor", "black")
+    p = PatchCollection(patches, **kwargs)
+    p.set_array(partial_effect)
+    ax.add_collection(p)
+    p.set_clim(np.min(partial_effect), np.max(partial_effect))
+    fig = ax.figure  # get the parent figure
+    fig.colorbar(p, ax=ax, label=term.label(), pad=0)
+    all_xy = np.vstack([poly for poly in polys.values()])
+    ax.set_xlim(all_xy[:, 0].min(), all_xy[:, 0].max())
+    ax.set_ylim(all_xy[:, 1].min(), all_xy[:, 1].max())
     return ax
 
 

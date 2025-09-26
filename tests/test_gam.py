@@ -91,9 +91,9 @@ def test_with_se_matches_without(test_case: GAMTestCase):
 
 abstract_method_test_cases = [
     "GAM - smooth_1d_gam",
-    "GAM - multivariate_normal_gam",
-    "GAM - gaulss_gam",
     "BAM - smooth_1d_random_wiggly_curve_gam",
+    "MVN",
+    "GauLSS",
 ]
 
 

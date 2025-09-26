@@ -1,18 +1,18 @@
 For development use the fork the repo on github, then run
 ```bash
-git clone https://github.com/<your-username>/.git
+git clone https://github.com/<your-username>/pymgcv.git
 cd pymgcv
-pixi shell -e dev  # activates the devlopment env
+pixi shell -e dev  # activates the development env
 ```
 
-### Testing
-Run tests with:
+Make changes, and verify that the tests pass by running:
 ```bash
 pytest
 ```
 
 ### Documentation
-The documentation includes notebook examples in docs/examples. To rerun all these prior to building the docs, run
+The documentation includes notebook examples in docs/examples. To rerun all these prior to
+building the docs, ensure that the development environment is activated and run
 ```bash
 pixi run notebooks
 ```
