@@ -62,7 +62,7 @@ convention = "google"
 r-base = ">=4.4.3,<4.5"
 r-mgcv = ">=1.9_3,<2"
 xz = ">=5.8.1,<6"
-rpy2 = ">=3.5.0"       # install from conda
+rpy2 = ">=3.6.2"       # install from conda
 
 
 [tool.pixi.pypi-options]
