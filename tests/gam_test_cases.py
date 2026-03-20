@@ -102,7 +102,7 @@ class GAMTestCase:  # GAM/BAM test cases
         with ro.local_context() as env:
             env["data"] = data_to_rdf(data, include=self.gam_model.referenced_variables)
             for k, v in self.add_to_r_env.items():
-                env[k] = v
+                env[k] = ro.FloatVector(v) if isinstance(v, np.ndarray) else v  #issue: can't use to_rpy(v)
             result = ro.r(self.mgcv_call)
             assert isinstance(result, ro.ListVector)
             return result
@@ -554,6 +554,27 @@ def family_test_cases() -> dict[str, GAMTestCase]:
         ),
     }
 
+def weighted_gam(gam_type: type[AbstractGAM]) -> GAMTestCase:
+    """test case for GAM with observation weights."""
+    data = get_test_data()
+    n = len(data)
+    
+    rng = np.random.default_rng(42)
+    weights = rng.uniform(0.5, 2.0, size=n)
+    
+    method = "REML"
+    
+    return GAMTestCase(
+        mgcv_args=f"y ~ s(x), weights=w_arr, method='{method}'",
+        gam_model=gam_type({"y": S("x")}),
+        data=data,
+        add_to_r_env={"w_arr": weights},
+        fit_kwargs={
+            "weights": weights,
+            "method": method
+        }
+    )
+
 
 def get_test_cases() -> dict[str, GAMTestCase]:
     supported_types_and_cases = [
@@ -580,6 +601,7 @@ def get_test_cases() -> dict[str, GAMTestCase]:
                 linear_functional_tensor_2d_gam,
                 markov_random_field_neighbours,
                 markov_random_field_polys,
+                weighted_gam
             ],
         ),
     ]
