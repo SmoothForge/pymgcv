@@ -916,13 +916,14 @@ class GAM(AbstractGAM):
         """
         # TODO some missing options: control, sp, min.sp etc
         self._check_data(data, requires="all")
+        # Look up weights before data is filtered to the referenced variables
+        weights = data[weights] if isinstance(weights, str) else weights  # type: ignore
         if isinstance(data, pd.DataFrame):
             data = pd.DataFrame(data[self.referenced_variables])
         else:
             data = {k: v for k, v in data.items() if k in self.referenced_variables}
 
         data = deepcopy(data)
-        weights = data[weights] if isinstance(weights, str) else weights  # type: ignore
         r_knots = (
             ro.NULL
             if knots is None
@@ -1160,12 +1161,13 @@ class BAM(AbstractGAM):
         """
         # TODO some missing options: control, sp, min.sp, nthreads
         self._check_data(data, requires="all")
+        # Look up weights before data is filtered to the referenced variables
+        weights = data[weights] if isinstance(weights, str) else weights  # type: ignore
         if isinstance(data, pd.DataFrame):
             data = pd.DataFrame(data[self.referenced_variables])
         else:
             data = {k: v for k, v in data.items() if k in self.referenced_variables}
 
-        weights = data[weights] if isinstance(weights, str) else weights  # type: ignore
         r_knots = (
             ro.NULL
             if knots is None
@@ -1177,7 +1179,11 @@ class BAM(AbstractGAM):
                 data=data_to_rdf(data, include=self.referenced_variables),
                 family=self.family.rfamily,
                 method=method,
-                weights=ro.NULL if weights is None else ro.FloatVector(np.asarray(weights)), #issue: can't use to_rpy(np.asarray(weights))
+                weights=(
+                    ro.NULL
+                    if weights is None
+                    else to_rpy(np.asarray(weights), as_vector=True)
+                ),
                 scale=0 if scale is None else (-1 if scale == "unknown" else scale),
                 select=select,
                 gamma=gamma,

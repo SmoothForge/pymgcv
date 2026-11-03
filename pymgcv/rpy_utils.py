@@ -21,7 +21,7 @@ from rpy2.robjects import numpy2ri, pandas2ri
 from pymgcv.rlibs import rbase
 
 
-def to_rpy(x):
+def to_rpy(x, *, as_vector: bool = False):
     """Convert Python object to R object using rpy2.
 
     Handles automatic conversion of pandas DataFrames, numpy arrays, and
@@ -30,6 +30,10 @@ def to_rpy(x):
 
     Args:
         x: Python object to convert (DataFrame, array, list, etc.)
+        as_vector: If True, 1-D numpy arrays are returned as plain R vectors. By
+            default they are converted to 1-D R arrays (with a ``dim`` attribute),
+            which R will not multiply elementwise with a matrix, e.g. as
+            ``mgcv::bam`` does with the weights.
 
     Returns:
         R object equivalent of the input, ready for use in R function calls
@@ -45,11 +49,15 @@ def to_rpy(x):
 
         # Convert numpy array
         arr = np.array([1, 2, 3])
-        r_vec = to_rpy(arr)
+        r_arr = to_rpy(arr)  # 1-D R array
+        r_vec = to_rpy(arr, as_vector=True)  # plain R vector
         ```
     """
     with (ro.default_converter + pandas2ri.converter + numpy2ri.converter).context():
-        return ro.conversion.get_conversion().py2rpy(x)
+        r_obj = ro.conversion.get_conversion().py2rpy(x)
+    if as_vector and isinstance(x, np.ndarray) and x.ndim == 1:
+        return rbase.as_vector(r_obj)
+    return r_obj
 
 
 def to_py(x) -> Any:
