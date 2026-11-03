@@ -576,6 +576,22 @@ def weighted_gam(gam_type: type[AbstractGAM]) -> GAMTestCase:
     )
 
 
+def weighted_by_column_name_gam(gam_type: type[AbstractGAM]) -> GAMTestCase:
+    """Test case for GAM with observation weights given as a column name."""
+    data = get_test_data()
+    rng = np.random.default_rng(42)
+    data["w"] = rng.uniform(0.5, 2.0, size=len(data))
+    method = "REML"
+
+    return GAMTestCase(
+        mgcv_args=f"y ~ s(x), weights=w_arr, method='{method}'",
+        gam_model=gam_type({"y": S("x")}),
+        data=data,
+        add_to_r_env={"w_arr": data["w"].to_numpy()},
+        fit_kwargs={"weights": "w", "method": method},
+    )
+
+
 def get_test_cases() -> dict[str, GAMTestCase]:
     supported_types_and_cases = [
         (
@@ -601,7 +617,8 @@ def get_test_cases() -> dict[str, GAMTestCase]:
                 linear_functional_tensor_2d_gam,
                 markov_random_field_neighbours,
                 markov_random_field_polys,
-                weighted_gam
+                weighted_gam,
+                weighted_by_column_name_gam,
             ],
         ),
     ]
