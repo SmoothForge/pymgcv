@@ -1179,7 +1179,11 @@ class BAM(AbstractGAM):
                 data=data_to_rdf(data, include=self.referenced_variables),
                 family=self.family.rfamily,
                 method=method,
-                weights=ro.NULL if weights is None else ro.FloatVector(np.asarray(weights)), #issue: can't use to_rpy(np.asarray(weights))
+                weights=(
+                    ro.NULL
+                    if weights is None
+                    else to_rpy(np.asarray(weights), as_vector=True)
+                ),
                 scale=0 if scale is None else (-1 if scale == "unknown" else scale),
                 select=select,
                 gamma=gamma,
