@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from pymgcv.basis_functions import CubicSpline, ThinPlateSpline
+from pymgcv.basis_functions import CubicSpline, PSpline, ThinPlateSpline
 from pymgcv.terms import AbstractTerm, Interaction, Offset, S, T
 from pymgcv.terms import L as L
 
@@ -59,6 +59,12 @@ test_cases = [
         expected_str='s(a,b,by=var,k=10L,bs="cc",id=2L,fx=TRUE)',
         expected_simple="s(a,b):var",
         expected_simple_with_idx="s.1(a,b):var",
+    ),
+    TermTestCase(
+        term=S("a", bs=PSpline(cyclic=True)),
+        expected_str='s(a,bs="cp",m=c(2L, 2L))',
+        expected_simple="s(a)",
+        expected_simple_with_idx="s.1(a)",
     ),
     TermTestCase(
         term=T("a", "b"),

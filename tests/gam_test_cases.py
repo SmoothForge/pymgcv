@@ -391,6 +391,7 @@ def spline_test_cases() -> dict[str, GAMTestCase]:  # TODO maybe add other basis
         "bs='bs'": bs.BSpline(),
         "bs='bs', m=c(3,2,1)": bs.BSpline(degree=3, penalty_orders=[2, 1]),
         "bs='ps', m=c(2,2)": bs.PSpline(degree=3, penalty_order=2),
+        "bs='cp', m=c(2,2)": bs.PSpline(degree=3, penalty_order=2, cyclic=True),
     }
     test_cases = {}
     for k, v in bases.items():
