@@ -360,6 +360,63 @@ class PSpline(AbstractBasis):
         return None
 
 
+@dataclass(kw_only=True)
+class AdaptiveSmooth(AbstractBasis):
+    """Adaptive smooth, where the strength of the penalty varies with the covariates.
+
+    Can be used for smooths of one or two variables. Discrete P-spline type penalties
+    are applied to the coefficients of the basis, and the penalties themselves have a
+    basis representation (the coefficients of which are the smoothing parameters),
+    allowing the smoothness of the function to vary with the covariates. The dimension
+    of the smoothing basis is set with ``k`` in the smooth (default 40 in 1D, 15 in 2D).
+
+    !!! warning
+
+        Adaptive smoothing places severe demands on the data, as each penalty basis
+        function adds a smoothing parameter to estimate. It is often as effective to
+        transform the covariate. Adaptive smooths cannot be used as marginals in
+        [`T`][pymgcv.terms.T] smooths.
+
+    !!! example
+
+        For an example, see the
+        [adaptive smooth example](../examples/adaptive_smooth.ipynb).
+
+    Args:
+        penalty_basis_dim: Dimension of the penalty basis, i.e. the number of smoothing
+            parameters. For two variables, an int applies to both marginals, or a
+            sequence of two ints can be used. Defaults to 5 in 1D and 3 in 2D.
+        bs: The smoothing basis, either a
+            [`PSpline`][pymgcv.basis_functions.PSpline] (default) or a
+            [`CubicSpline`][pymgcv.basis_functions.CubicSpline] (with
+            ``shrinkage=False``). Only the type of the basis is passed to mgcv (i.e.
+            what is returned by ``str(bs)``).
+    """
+
+    penalty_basis_dim: int | Iterable[int] | None = None
+    bs: AbstractBasis = field(default_factory=PSpline)
+
+    def __post_init__(self):
+        """Validate the smoothing basis."""
+        if str(self.bs) not in {"ps", "cp", "cr", "cc"}:
+            raise ValueError(
+                "bs must be a PSpline or CubicSpline (without shrinkage), got "
+                f"{self.bs!r}.",
+            )
+
+    def __str__(self) -> str:
+        """Return mgcv identifier for adaptive smooths."""
+        return "ad"
+
+    def _get_m(self) -> int | float | ro.Vector | None:
+        if self.penalty_basis_dim is None or isinstance(self.penalty_basis_dim, int):
+            return self.penalty_basis_dim
+        return ro.IntVector(list(self.penalty_basis_dim))
+
+    def _get_xt(self) -> None | ro.ListVector | _Var:
+        return ro.ListVector({"bs": str(self.bs)})
+
+
 class MarkovRandomField(AbstractBasis):
     """Intrinsic Gaussian Markov random field for discrete spatial data.
 
