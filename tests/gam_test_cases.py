@@ -169,6 +169,16 @@ def smooth_2d_m_and_xt(gam_type: type[AbstractGAM]) -> GAMTestCase:
     )
 
 
+def adaptive_smooth_2d_gam(gam_type: type[AbstractGAM]) -> GAMTestCase:
+    method = get_method_default(gam_type)
+    # Smallest bases mgcv allows (penalty basis >= 3, and smaller than k), for speed
+    basis = bs.AdaptiveSmooth(penalty_basis_dim=[3, 4])
+    return GAMTestCase(
+        mgcv_args=f"y~s(x, x1, k=6, bs='ad', m=c(3,4)), method='{method}'",
+        gam_model=gam_type({"y": S("x", "x1", k=6, bs=basis)}),
+    )
+
+
 def tensor_2d_gam(gam_type: type[AbstractGAM]) -> GAMTestCase:
     method = get_method_default(gam_type)
     return GAMTestCase(
@@ -591,6 +601,7 @@ def get_test_cases() -> dict[str, GAMTestCase]:
                 smooth_1d_gam,
                 smooth_2d_gam,
                 smooth_2d_m_and_xt,
+                adaptive_smooth_2d_gam,
                 smooth_with_specified_knots,
                 tensor_2d_gam,
                 tensor_interaction_2d_gam_with_mc,

@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import rpy2.robjects as ro
 
-from pymgcv.basis_functions import AbstractBasis
+from pymgcv.basis_functions import AbstractBasis, AdaptiveSmooth
 from pymgcv.custom_types import FitAndSE
 from pymgcv.formula_utils import _to_r_constructor_string, _Var
 from pymgcv.rlibs import rbase, rmgcv, rstats
@@ -486,7 +486,10 @@ class S(AbstractSmooth):
     def mgcv_identifier(self, formula_idx: int = 0) -> str:
         """Generate simplified smooth identifier."""
         idx = "" if formula_idx == 0 else f".{formula_idx}"
-        mgcv_identifier = f"s{idx}({','.join(self.varnames)})"
+        # mgcv constructs multivariate adaptive smooths as tensor products
+        is_tensor = isinstance(self.bs, AdaptiveSmooth) and len(self.varnames) > 1
+        prefix = "te" if is_tensor else "s"
+        mgcv_identifier = f"{prefix}{idx}({','.join(self.varnames)})"
 
         if self.by is not None:
             mgcv_identifier += f":{self.by}"
