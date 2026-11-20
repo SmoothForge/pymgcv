@@ -169,6 +169,20 @@ def smooth_2d_m_and_xt(gam_type: type[AbstractGAM]) -> GAMTestCase:
     )
 
 
+def smooth_on_sphere_gam(gam_type: type[AbstractGAM]) -> GAMTestCase:
+    method = get_method_default(gam_type)
+    rng = np.random.default_rng(42)
+    n = 200
+    lat = rng.uniform(-90, 90, size=n)
+    lon = rng.uniform(-180, 180, size=n)
+    y = np.sin(np.radians(lat)) * np.cos(np.radians(lon)) + rng.normal(0, 0.1, n)
+    return GAMTestCase(
+        mgcv_args=f"y~s(lat, lon, bs='sos'), method='{method}'",
+        gam_model=gam_type({"y": S("lat", "lon", bs=bs.SplineOnSphere())}),
+        data=pd.DataFrame({"lat": lat, "lon": lon, "y": y}),
+    )
+
+
 def tensor_2d_gam(gam_type: type[AbstractGAM]) -> GAMTestCase:
     method = get_method_default(gam_type)
     return GAMTestCase(
@@ -386,7 +400,10 @@ def linear_functional_tensor_2d_gam(gam_type: type[AbstractGAM]) -> GAMTestCase:
 def spline_test_cases() -> dict[str, GAMTestCase]:  # TODO maybe add other basis types
     bases = {
         "bs='tp'": bs.ThinPlateSpline(),
+        "bs='ts'": bs.ThinPlateSpline(shrinkage=True),
         "bs='cr'": bs.CubicSpline(),
+        "bs='cs'": bs.CubicSpline(shrinkage=True),
+        "bs='cc'": bs.CubicSpline(cyclic=True),
         "bs='ds', m=c(1,0)": bs.DuchonSpline(m=1),
         "bs='bs'": bs.BSpline(),
         "bs='bs', m=c(3,2,1)": bs.BSpline(degree=3, penalty_orders=[2, 1]),
@@ -586,6 +603,7 @@ def get_test_cases() -> dict[str, GAMTestCase]:
                 smooth_1d_gam,
                 smooth_2d_gam,
                 smooth_2d_m_and_xt,
+                smooth_on_sphere_gam,
                 smooth_with_specified_knots,
                 tensor_2d_gam,
                 tensor_interaction_2d_gam_with_mc,
