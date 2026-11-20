@@ -23,9 +23,17 @@ requires = ["hatchling"]
 [tool.pytest.ini_options]
 addopts = "--markdown-docs"
 
+[tool.coverage.run]
+source = ["pymgcv"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+
 [project.optional-dependencies]
 dev = [
     "pytest",
+    "pytest-cov",
     "ruff",
     "ipykernel",
     "mkdocs",
@@ -82,3 +90,7 @@ dev = ["dev"]
 # Ensures all notebooks up to date: pixi run notebooks
 cmd = ["$PIXI_PROJECT_ROOT/docs/scripts/notebooks.sh"]
 env = { "PYTHONWARNINGS" = "ignore" }
+
+[tool.pixi.feature.dev.tasks.coverage]
+# Runs the tests with a coverage report: pixi run coverage
+cmd = "pytest --cov"
