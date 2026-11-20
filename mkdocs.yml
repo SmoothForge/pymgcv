@@ -50,6 +50,8 @@ nav:
       - GAMLSS: examples/gamlss.ipynb
       - Smooth-by-categorical: examples/smooth_by_categorical.ipynb
       - Linear functional: examples/linear_functional.ipynb
+      - Basis functions:
+          - Adaptive smooth: examples/adaptive_smooth.ipynb
   - Applied Examples:
       - Ozone: examples/ozone.ipynb
       - Seasonal CO2: examples/seasonal_co2.ipynb
