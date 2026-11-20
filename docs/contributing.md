@@ -10,6 +10,20 @@ Make changes, and verify that the tests pass by running:
 pytest
 ```
 
+### Test coverage
+To run the tests with a coverage report for the ``pymgcv`` package, run
+```bash
+pixi run coverage
+```
+This prints the coverage of each module with the line numbers that are not run by any
+test. Any extra arguments are passed on to ``pytest``, e.g.
+```bash
+pixi run coverage tests/test_gam.py      # coverage from a subset of the tests
+pixi run coverage --cov-report=html      # browsable report in htmlcov/index.html
+```
+Note that the code examples in the docs and docstrings are run as tests too, so they
+also count towards the coverage.
+
 ### Documentation
 The documentation includes notebook examples in docs/examples. To rerun all these prior to
 building the docs, ensure that the development environment is activated and run
