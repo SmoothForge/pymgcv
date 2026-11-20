@@ -331,22 +331,32 @@ class PSpline(AbstractBasis):
     coefficients. Note for most use cases splines with derivative-based penalties (e.g.
     [`ThinPlateSpline`][pymgcv.basis_functions.ThinPlateSpline] or
     [`CubicSpline`][pymgcv.basis_functions.CubicSpline]) tend to yield better
-    MSE performance. ``BSpline(degree=3, penalty_order=2)`` is
+    MSE performance. ``PSpline(degree=3, penalty_order=2)`` is
     cubic-spline-like.
 
     Args:
         degree: Degree of the B-spline basis (e.g. 3 for cubic).
         penalty_order: The difference order to penalize. 0-th order is ridge penalty.
             Default to `degree-1`.
+        cyclic: If True, creates a cyclic P-spline, where the function values and
+            derivatives match at the boundaries. Use for periodic data like time of
+            day, angles, or seasonal patterns. Default is False.
     """
 
-    cyclic: bool = False
     degree: int
     penalty_order: int
+    cyclic: bool
 
-    def __init__(self, *, degree: int = 3, penalty_order: int | None = None):
+    def __init__(
+        self,
+        *,
+        degree: int = 3,
+        penalty_order: int | None = None,
+        cyclic: bool = False,
+    ):
         self.degree = degree
         self.penalty_order = penalty_order if penalty_order is not None else degree - 1
+        self.cyclic = cyclic
 
     def __str__(self) -> str:
         """Return mgcv identifier: 'cp' for cyclic, 'ps' for standard."""
